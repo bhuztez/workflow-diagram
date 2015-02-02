@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WCP1: Sequence</title>
+<link rel="stylesheet" type="text/css" href="../base.css" />
+<script type="application/javascript;version=1.8" src="../dfa.js"></script>
+<script type="application/javascript;version=1.8" src="../slr.js"></script>
+<script type="application/javascript;version=1.8" src="../pi.js"></script>
+<script type="application/javascript;version=1.8" src="../diagram.js"></script>
+</head>
+
+<body>
+
+<h1>WCP1: Sequence</h1>
+
+<svg width="420" height="120">
+
+<g>
+<use xlink:href="shape.svg#sequence" />
+
+<foreignObject x="20" y="70" width="60" height="50" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c1"></div>
+</foreignObject>
+<foreignObject x="120" y="70" width="60" height="50" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c2"></div>
+</foreignObject>
+<foreignObject x="220" y="70" width="60" height="50" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c3"></div>
+</foreignObject>
+<foreignObject x="320" y="70" width="60" height="50" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c4"></div>
+</foreignObject>
+</g>
+</svg>
+
+
+<div id="control">
+<div><button id="reset">Reset</button></div>
+<div id="result"></div>
+
+<div>
+<textarea id="input">
+proc n1(P1) {
+  button B in {
+    attach B at c1;
+    wait B;
+    detach B
+  };
+  channel T in {
+    send T to P1
+  }
+}
+
+proc n2(P1, P2) {
+  recv T from P1;
+  button B in {
+    attach B at c2;
+    wait B;
+    detach B
+  };
+  send T to P2
+}
+
+proc n3(P2, P3) {
+  recv T from P2;
+  button B in {
+    attach B at c3;
+    wait B;
+    detach B
+  };
+  send T to P3
+}
+
+proc n4(P3) {
+  recv T from P3;
+  button B in {
+    set B title done;
+    attach B at c4
+  }
+}
+
+proc main() {
+  channel P1, P2, P3 in {
+    n1(P1) |
+    n2(P1, P2) |
+    n3(P2, P3) |
+    n4(P3)
+  }
+}
+</textarea>
+</div>
+</div>
+
+
+</body>
+</html>

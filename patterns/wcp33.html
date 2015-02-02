@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WCP33: Generalised AND-Join</title>
+<link rel="stylesheet" type="text/css" href="../base.css" />
+<script type="application/javascript;version=1.8" src="../dfa.js"></script>
+<script type="application/javascript;version=1.8" src="../slr.js"></script>
+<script type="application/javascript;version=1.8" src="../pi.js"></script>
+<script type="application/javascript;version=1.8" src="../diagram.js"></script>
+</head>
+
+<body>
+
+<h1>WCP33: Generalised AND-Join</h1>
+
+<svg width="800" height="300">
+<g>
+<use xlink:href="shape.svg#split-join" />
+
+<foreignObject x="20" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c1"></div>
+</foreignObject>
+<foreignObject x="120" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c2"></div>
+</foreignObject>
+<foreignObject x="220" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c3"></div>
+</foreignObject>
+<foreignObject x="320" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c4"></div>
+</foreignObject>
+<foreignObject x="420" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c5"></div>
+</foreignObject>
+</g>
+<foreignObject x="520" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c6"></div>
+</foreignObject>
+<foreignObject x="620" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c7"></div>
+</foreignObject>
+</g>
+</svg>
+
+
+<div id="control">
+<div><button id="reset">Reset</button></div>
+<div id="result"></div>
+
+<div>
+<textarea id="input">
+proc n1(P1) {
+  button B in {
+    attach B at c1;
+    wait B;
+    detach B
+  };
+  channel T in {
+    send T to P1
+  }
+}
+
+proc n2(P1, P2) {
+  recv T from P1;
+  button B in {
+    attach B at c2;
+    wait B;
+    detach B;
+    send T to P2
+  } |
+  button B in {
+    attach B at c2;
+    wait B;
+    detach B;
+    send T to P2
+  }
+}
+
+proc n3(P2, P3, P4) {
+  recv T from P2;
+  n3(P2, P3, P4) |
+  button B in {
+    attach B at c3;
+    wait B;
+    detach B;
+    send T to P3 | send T to P4
+  }
+}
+
+proc n4(P3, P5) {
+  recv T from P3;
+  n4(P3, P5) |
+  button B in {
+    attach B at c4;
+    wait B;
+    detach B;
+    send T to P5
+  }
+}
+
+proc n5(P4, P6) {
+  recv T from P4;
+  n5(P4, P6) |
+  button B in {
+    attach B at c5;
+    wait B;
+    detach B;
+    send T to P6
+  }
+}
+
+proc n6(P5, P6, P7) {
+  channel Q1, Q2 in {
+    trig6(Q1, Q2, P7) |
+    relay6(P5, Q1) |
+    relay6(P6, Q2)
+  }
+}
+
+proc relay6(PX, QX) {
+  recv QA from QX;
+  recv QB from QX;
+  recv T from PX;
+  send T to QA | send T to QB | relay6(PX, QX)
+}
+
+proc acc6(Q3, P7) {
+  recv T1 from Q3;
+  button B in {
+    attach B at c6;
+    recv T2 from Q3;
+    wait B;
+    detach B;
+    send T1 to P7
+  }
+}
+
+proc trig6(Q1, Q2, P7) {
+  channel Q3, Q4, Q5, Q6 in {
+    { send Q3 to Q1; send Q4 to Q1 } |
+    { send Q3 to Q2; send Q5 to Q2 } |
+    acc6(Q3, P7) |
+    { recv QX from Q4; send Q4 to Q6 } |
+    { recv QX from Q5; send Q5 to Q6 } |
+    { recv QX from Q6;
+      trig6(Q1, Q2, P7) | recv QY from Q6
+    }
+  }
+}
+
+
+proc n7(P7) {
+  recv T from P7;
+  n7(P7) |
+  button B in {
+    set B title done;
+    attach B at c7
+  }
+}
+
+proc main() {
+  channel P1, P2, P3, P4, P5, P6, P7 in {
+    n1(P1) |
+    n2(P1, P2) |
+    n3(P2, P3, P4) |
+    n4(P3, P5) |
+    n5(P4, P6) |
+    n6(P5, P6, P7) |
+    n7(P7)
+  }
+}
+
+</textarea>
+</div>
+</div>
+
+</body>
+</html>

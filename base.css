@@ -1,0 +1,55 @@
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 1em 2em;
+}
+
+textarea {
+  width: 100%;
+  height: 30em;
+  resize: none;
+}
+
+#result {
+  padding: 1em 0;
+  clear: both;
+}
+
+
+line {
+  fill: none;
+  stroke: #000000;
+}
+
+text {
+  fill: #000000;
+  stroke: none;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+circle.node,
+rect.node {
+  fill: none;
+  stroke: #000000;
+}
+
+rect.container {
+  fill: none;
+  stroke: #CCCCCC;
+}
+
+path.arrow {
+  fill: none;
+  stroke: #000000;
+  marker-end: url(patterns/shape.svg#arrow-marker);
+}
+
+div.container {
+  padding: 4px 0;
+  text-align: center;
+}

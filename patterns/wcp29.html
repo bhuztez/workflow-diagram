@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WCP29: Cancelling Discriminator</title>
+<link rel="stylesheet" type="text/css" href="../base.css" />
+<script type="application/javascript;version=1.8" src="../dfa.js"></script>
+<script type="application/javascript;version=1.8" src="../slr.js"></script>
+<script type="application/javascript;version=1.8" src="../pi.js"></script>
+<script type="application/javascript;version=1.8" src="../diagram.js"></script>
+</head>
+
+<body>
+
+<h1>WCP29: Cancelling Discriminator</h1>
+
+<svg width="800" height="300">
+<g>
+<use xlink:href="shape.svg#join" />
+
+<foreignObject x="20" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c1"></div>
+</foreignObject>
+<foreignObject x="120" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c2"></div>
+</foreignObject>
+<foreignObject x="220" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c3"></div>
+</foreignObject>
+<foreignObject x="320" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c4"></div>
+</foreignObject>
+<foreignObject x="420" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c5"></div>
+</foreignObject>
+</g>
+<foreignObject x="520" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c6"></div>
+</foreignObject>
+</g>
+
+</svg>
+
+
+<div id="control">
+<div><button id="reset">Reset</button></div>
+<div id="result"></div>
+
+<div>
+<textarea id="input">
+proc n1(P1) {
+  button B in {
+    attach B at c1;
+    wait B;
+    detach B
+  };
+  channel T in {
+    send T to P1
+  }
+}
+
+proc n2(P1, P2, P3, Q1) {
+  recv T from P1;
+
+  button B in {
+    attach B at c2;
+    wait B;
+    detach B
+  };
+
+  channel Q2, Q3, Q4, Q5, Q6, Q7 in {
+    { send Q2 to Q1
+    } | {
+      send Q3 to P2
+    } | {
+      send Q4 to P3
+    } | {
+      send Q5 to Q2;
+      send Q6 to Q2;
+      send Q7 to Q2
+    } | {
+      send Q5 to Q3;
+      send Q6 to Q3;
+      send T to Q3
+    } | {
+      send Q5 to Q4;
+      send Q7 to Q4;
+      send T to Q4
+    }
+  }
+}
+
+proc n3(P2, P4) {
+  recv Q1 from P2;
+  recv Q2 from Q1;
+  recv QC from Q1;
+  recv T from Q1;
+
+  button B in {
+    attach B at c3;
+
+    channel Q3, Q4, Q5 in {
+      { wait B;
+        send Q4 to Q3
+      } | {
+        recv QD from QC;
+        send Q5 to Q3
+      } | {
+        recv QX from Q3;
+        detach B;
+        send QX to QX
+      } | {
+        recv QX from Q4;
+        recv QY from Q3 |
+        channel Q6 in {
+          send Q6 to P4 | {
+            send Q2 to Q6;
+            send T to Q6
+          }
+        }
+      } | {
+        recv QX from Q5
+      }
+    }
+  }
+}
+
+proc n4(P3, P5) {
+  recv Q1 from P3;
+  recv Q2 from Q1;
+  recv QC from Q1;
+  recv T from Q1;
+
+  button B in {
+    attach B at c4;
+
+    channel Q3, Q4, Q5 in {
+      { wait B;
+        send Q4 to Q3
+      } | {
+        recv QD from QC;
+        send Q5 to Q3
+      } | {
+        recv QX from Q3;
+        detach B;
+        send QX to QX
+      } | {
+        recv QX from Q4;
+        recv QY from Q3 |
+        channel Q6 in {
+          send Q6 to P5 | {
+            send Q2 to Q6;
+            send T to Q6
+          }
+        }
+      } | {
+        recv QX from Q5
+      }
+    }
+  }
+}
+
+
+proc n5(P4, P5, P6, Q1) {
+  relay5(P4) | relay5(P5) | join5(P6, Q1)
+}
+
+proc relay5(PX) {
+  recv Q1 from PX;
+  recv Q2 from Q1;
+  recv T from Q1;
+  send T to Q2
+}
+
+proc join5(P6, Q1) {
+  recv Q2 from Q1;
+  recv Q3 from Q2;
+  recv QC1 from Q2;
+  recv QC2 from Q2;
+
+  button B in {
+    attach B at c5;
+    recv T1 from Q3;
+
+    { wait B;
+      detach B;
+      send T1 to P6 |
+      channel Q4 in {
+        send Q4 to QC1 |
+        send Q4 to QC2
+      }
+    } | {
+      recv T2 from Q3
+    }
+  }
+}
+
+proc n6(P6) {
+  recv T from P6;
+  button B in {
+    set B title done;
+    attach B at c6
+  }
+}
+
+proc main() {
+  channel P1, P2, P3, P4, P5, P6, Q1 in {
+    n1(P1) |
+    n2(P1, P2, P3, Q1) |
+    n3(P2, P4) |
+    n4(P3, P5) |
+    n5(P4, P5, P6, Q1) |
+    n6(P6)
+  }
+}
+</textarea>
+</div>
+</div>
+
+
+</body>
+</html>

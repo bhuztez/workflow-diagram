@@ -1,0 +1,311 @@
+        c
+       / \
+     B/   \D
+  A  /     \  F
+a---b       e---f
+     \     /
+     C\   /E
+       \ /
+        d
+
+
+WCP-30 Structured Partial Join
+
+
+workflow(a, f) {
+  a -> b;
+  e -> f;
+
+  structured-partial-join(b, e) {
+    b -> c;
+    b -> d;
+    c -> e;
+    d -> e;
+  }
+}
+
+
+
+proc a(Input, A) {
+  recv Task from Input;
+
+  button Button in {
+    attach Button at a;
+    wait Button;
+    detach Button
+  };
+
+  send Task to A
+}
+
+
+proc b(A, B, C, Join) {
+  recv Task from A;
+
+  button Button in {
+    attach Button at b;
+    wait Button;
+    detach Button
+  }
+
+  channel Ctx in {
+    { send Ctx to B; send Task to B } |
+    { send Ctx to C; send Task to C } |
+    { send Ctx to Join }
+  }
+}
+
+
+proc c(B, D) {
+  recv Ctx from B;
+  recv Task from B;
+  wait at c show 1 1;
+  send Ctx to D;
+  send Task to D
+}
+
+
+proc e(Join, D, E, F) {
+  { recv Ctx from Join;
+    button Button in {
+      attach Button at f;
+      recv Task1 from Ctx;
+
+      { wait Button;
+        detach Button;
+        send Task1 to F;
+      } |
+      { recv Task2 from Ctx;
+      }
+    }
+
+  } | {
+    recv Ctx from D;
+    recv Task from D;
+    send Task to Ctx;
+  } | {
+    recv Ctx from E;
+    recv Task from E;
+    send Task to Ctx;
+  }
+}
+
+
+proc main(Input, Output) {
+  channel A, B, C, D, E, F, Join in {
+    a(Input, A) |
+    b(A, B, C, Join) |
+    c(B, D) |
+    d(C, E) |
+    e(Join, D, E, F) |
+    f(F, Output)
+  }
+}
+
+
+WCP-33 Generalised AND-Join
+
+
+workflow(a, f) {
+  generalised-and-join(e);
+  a -> b;
+  b -> c;
+  b -> d;
+  c -> e;
+  d -> e;
+  e -> f;
+}
+
+
+
+-- A: Accumulator
+-- M, N: Trigger to create new Accumulator
+
+
+proc acc(A, F) {
+  recv Task1 from A;
+  recv Task2 from A;
+  send Task1 to F;
+}
+
+
+proc trig(X, Y, F) {
+  channel A, M, N, O in {
+    { send A to X; send M to X } |
+    { send A to Y; send N to Y } |
+    acc(A, F) |
+    { recv Z from M; send M to O } |
+    { recv Z from N; send N to O } |
+    { recv Z1 from O; { trig(X, Y, F) | recv Z2 from O } }
+  }
+}
+
+
+proc e(D, E, F) {
+  channel X, Y in {
+    { recv A from X; recv M from X; recv Task from D; { send Task to A | send Task to M } } |
+    { recv A from Y; recv N from Y; recv Task from E; { send Task to A | send Task to N } } |
+    trig(X, Y, F)
+  }
+}
+
+
+
+WCP-19 Cancel Task
+
+proc n(A,B) {
+  recv Task from A;
+
+  button Cancel, Button in {
+    attach Cancel at cancel;
+    attach Button at n;
+
+    channel C, D, E in {
+      { wait Cancel;
+        send D to C
+      } | {
+        wait Button;
+        send E to C
+      } | {
+        recv X from C;
+        detach Button;
+        detach Cancel;
+        send C to X;
+      } | {
+        recv X from D
+      } | {
+        recv X from E;
+        send Task to B
+      }
+    }
+  }
+}
+
+
+
+WCP-20 Cancel Case
+
+proc canceller(C) {
+  button Cancel in {
+    attach Cancel at cancel;
+    wait Cancel;
+    detach Cancel;
+  };
+
+  send C to C;
+}
+
+
+proc n(C, A, B) {
+  recv Task from A;
+
+  button Button {
+    attach Button at n;
+
+    channel D, E, F {
+      { recv X from C;
+        send E to D;
+      } | {
+        wait Button;
+        send F to D;
+      } | {
+        recv X from D;
+        detach Button;
+        send D to X
+      } | {
+        recv X from E
+      } | {
+        recv X from F;
+        send Task to B;
+      }
+    }
+  }
+}
+
+
+WCP-25 Cancel Region
+
+
+proc canceller(C) {
+  button Cancel in {
+    attach Cancel at cancel;
+    wait Cancel;http://ruby-china.org/
+    detach Cancel;
+  };
+
+  { send C to C | canceller(C) }
+}
+
+
+proc n(C, A, B) {
+}
+
+                                
+    --------------------
+   /                    \   
+   |   consume Cancel   |   wait Button 
+   \  /              \  /  /           \
+  n --                -- --             -- next or stop
+      \              /     \           /
+         wait Task          wait Cancel
+
+proc echo(D, T) {
+  recv X from D;
+  send T to X
+}
+
+proc consumer(C, D) {
+  { recv X from C;
+    send E to D
+  } | {
+    recv T from E;
+    { send T to T |
+      consumer(C, D) |
+      channel X in {
+        echo(D, X) |
+        { recv Y from X }
+      }
+    }
+  }
+}
+
+proc task(A, B, D) {
+  { recv Task from A;
+    send F to D;
+    send Task to G
+  } | {
+    recv T from F;
+    recv Task from G;
+
+    button Button in;
+    attach Button at n;
+
+    channel H, I, J
+
+    channel X, Y {
+      echo(D, X) |
+      { recv Z from X;
+        { send Z to T |
+          send Z to Y }
+      } | {
+        wait Button;
+        send I to H
+      } | {
+        recv Z from Y;
+        send J to H
+      } | {
+        recv Z from H;
+        detach Button;
+        send H to Z;
+      } | {
+        recv Z from I;
+        send Task to B;
+      } | {
+        recv Z from J
+      }
+
+
+    }
+
+  }
+}

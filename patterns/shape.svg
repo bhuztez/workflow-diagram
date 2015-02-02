@@ -1,0 +1,165 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<defs>
+<g id="arrow"><path d="M 10,5 L 0,0 L 2,5 L 0,10" /></g>
+
+<marker id="arrow-marker" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+  <g><use xlink:href="#arrow" /></g>
+</marker>
+
+<g id="begin">
+  <circle class="node" r="20" />
+</g>
+
+<g id="node">
+  <rect class="node" x="-20" y="-20" width="40" height="40" />
+</g>
+
+<g id="end">
+  <circle class="node" r="20" />
+</g>
+
+<g id="sequence">
+<use xlink:href="#begin" x="50"  y="30" />
+<use xlink:href="#node"  x="150" y="30" />
+<use xlink:href="#node"  x="250" y="30" />
+<use xlink:href="#end"   x="350" y="30" />
+
+<path class="arrow" d="M  70 30 L 120 30" />
+<path class="arrow" d="M 170 30 L 220 30" />
+<path class="arrow" d="M 270 30 L 320 30" />
+
+<rect class="container" x="20"  y="70" width="60" height="50" />
+<rect class="container" x="120" y="70" width="60" height="50" />
+<rect class="container" x="220" y="70" width="60" height="50" />
+<rect class="container" x="320" y="70" width="60" height="50" />
+
+<text x="50"  y="30">n1</text>
+<text x="150" y="30">n2</text>
+<text x="250" y="30">n3</text>
+<text x="350" y="30">n4</text>
+
+<text x="100" y="15">P1</text>
+<text x="200" y="15">P2</text>
+<text x="300" y="15">P3</text>
+</g>
+
+<g id="split">
+<use xlink:href="#begin" x="50"   y="80"  />
+<use xlink:href="#node"  x="150"  y="80"  />
+<use xlink:href="#node"  x="250"  y="30"  />
+<use xlink:href="#node"  x="350"  y="130" />
+<use xlink:href="#end"   x="450"  y="80"  />
+
+<path class="arrow" d="M  70  80 L 120  80" />
+<path class="arrow" d="M 170  80 L 220  40" />
+<path class="arrow" d="M 170  80 L 220 130 L 320 130" />
+<path class="arrow" d="M 270  30 L 370  30 L 420  70" />
+<path class="arrow" d="M 370 130 L 420  90" />
+
+<rect class="container" x="20"  y="170" width="60" height="100" />
+<rect class="container" x="120" y="170" width="60" height="100" />
+<rect class="container" x="220" y="170" width="60" height="100" />
+<rect class="container" x="320" y="170" width="60" height="100" />
+<rect class="container" x="420" y="170" width="60" height="100" />
+
+<text x="50"  y="80" >n1</text>
+<text x="150" y="80" >n2</text>
+<text x="250" y="30" >n3</text>
+<text x="350" y="130">n4</text>
+<text x="450" y="80" >n5</text>
+
+<text x="100" y="65" >P1</text>
+<text x="190" y="45" >P2</text>
+<text x="275" y="115">P3</text>
+<text x="325" y="15" >P4</text>
+<text x="390" y="95" >P5</text>
+</g>
+
+<g id="join">
+<use xlink:href="#begin" x="50"   y="80"  />
+<use xlink:href="#node"  x="150"  y="80"  />
+<use xlink:href="#node"  x="250"  y="30"  />
+<use xlink:href="#node"  x="350"  y="130" />
+<use xlink:href="#node"  x="450"  y="80"  />
+<use xlink:href="#end"   x="550"  y="80"  />
+
+<path class="arrow" d="M  70  80 L 120  80" />
+<path class="arrow" d="M 170  80 L 220  40" />
+<path class="arrow" d="M 170  80 L 220 130 L 320 130" />
+<path class="arrow" d="M 270  30 L 370  30 L 420  70" />
+<path class="arrow" d="M 370 130 L 420  90" />
+<path class="arrow" d="M 470  80 L 520  80" />
+
+<rect class="container" x="20"  y="170" width="60" height="100" />
+<rect class="container" x="120" y="170" width="60" height="100" />
+<rect class="container" x="220" y="170" width="60" height="100" />
+<rect class="container" x="320" y="170" width="60" height="100" />
+<rect class="container" x="420" y="170" width="60" height="100" />
+<rect class="container" x="520" y="170" width="60" height="100" />
+
+<text x="50"  y="80" >n1</text>
+<text x="150" y="80" >n2</text>
+<text x="250" y="30" >n3</text>
+<text x="350" y="130">n4</text>
+<text x="450" y="80" >n5</text>
+<text x="550" y="80" >n6</text>
+
+<text x="100" y="65" >P1</text>
+<text x="190" y="45" >P2</text>
+<text x="275" y="115">P3</text>
+<text x="325" y="15" >P4</text>
+<text x="390" y="95" >P5</text>
+<text x="500" y="65" >P6</text>
+</g>
+
+
+<g id="split-join">
+<use xlink:href="#begin" x="50"   y="80"  />
+<use xlink:href="#node"  x="150"  y="80"  />
+<use xlink:href="#node"  x="250"  y="80"  />
+<use xlink:href="#node"  x="350"  y="30"  />
+<use xlink:href="#node"  x="450"  y="130" />
+<use xlink:href="#node"  x="550"  y="80"  />
+<use xlink:href="#end"   x="650"  y="80"  />
+
+<path class="arrow" d="M  70  80 L 120  80" />
+<path class="arrow" d="M 170  80 L 220  80" />
+<path class="arrow" d="M 270  80 L 320  40" />
+<path class="arrow" d="M 270  80 L 320 130 L 420 130" />
+<path class="arrow" d="M 370  30 L 470  30 L 520  70" />
+<path class="arrow" d="M 470 130 L 520  90" />
+<path class="arrow" d="M 570  80 L 620  80" />
+
+<rect class="container" x="20"  y="170" width="60" height="100" />
+<rect class="container" x="120" y="170" width="60" height="100" />
+<rect class="container" x="220" y="170" width="60" height="100" />
+<rect class="container" x="320" y="170" width="60" height="100" />
+<rect class="container" x="420" y="170" width="60" height="100" />
+<rect class="container" x="520" y="170" width="60" height="100" />
+<rect class="container" x="620" y="170" width="60" height="100" />
+
+<text x="50"  y="80" >n1</text>
+<text x="150" y="80" >n2</text>
+<text x="250" y="80" >n3</text>
+<text x="350" y="30" >n4</text>
+<text x="450" y="130">n5</text>
+<text x="550" y="80" >n6</text>
+<text x="650" y="80" >n7</text>
+
+<text x="100" y="65" >P1</text>
+<text x="200" y="65" >P2</text>
+<text x="290" y="45" >P3</text>
+<text x="375" y="115">P4</text>
+<text x="425" y="15" >P5</text>
+<text x="490" y="95" >P6</text>
+<text x="600" y="65" >P7</text>
+</g>
+
+</defs>
+</svg>

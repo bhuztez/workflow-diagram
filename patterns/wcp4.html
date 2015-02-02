@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WCP4: Exclusive Choice</title>
+<link rel="stylesheet" type="text/css" href="../base.css" />
+<script type="application/javascript;version=1.8" src="../dfa.js"></script>
+<script type="application/javascript;version=1.8" src="../slr.js"></script>
+<script type="application/javascript;version=1.8" src="../pi.js"></script>
+<script type="application/javascript;version=1.8" src="../diagram.js"></script>
+</head>
+
+<body>
+
+<h1>WCP4: Exclusive Choice</h1>
+
+<svg width="800" height="300">
+<g>
+<use xlink:href="shape.svg#split" />
+
+<foreignObject x="20" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c1"></div>
+</foreignObject>
+<foreignObject x="120" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c2"></div>
+</foreignObject>
+<foreignObject x="220" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c3"></div>
+</foreignObject>
+<foreignObject x="320" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c4"></div>
+</foreignObject>
+<foreignObject x="420" y="170" width="60" height="100" requiredExtensions="http://www.w3.org/1999/xhtml">
+  <div class="container" id="container-c5"></div>
+</foreignObject>
+</g>
+
+</svg>
+
+
+<div id="control">
+<div><button id="reset">Reset</button></div>
+<div id="result"></div>
+
+<div>
+<textarea id="input">
+proc n1(P1) {
+  button B in {
+    attach B at c1;
+    wait B;
+    detach B
+  };
+  channel T in {
+    send T to P1
+  }
+}
+
+proc n2(P1, P2, P3) {
+  recv T from P1;
+
+  button B1, B2 in {
+    set B1 title n3;
+    set B2 title n4;
+    attach B1 at c2;
+    attach B2 at c2;
+
+    { wait B1;
+      detach B2;
+      detach B1;
+      send T to P2
+    } | {
+      wait B2;
+      detach B1;
+      detach B2;
+      send T to P3
+    }
+  }
+}
+
+proc n3(P2, P4) {
+  recv T from P2;
+  button B in {
+    attach B at c3;
+    wait B;
+    detach B
+  };
+  send T to P4
+}
+
+proc n4(P3, P5) {
+  recv T from P3;
+  button B in {
+    attach B at c4;
+    wait B;
+    detach B
+  };
+  send T to P5
+}
+
+proc n5(P4, P5) {
+  channel Q in {
+    { recv T from P4;
+      send T to Q
+    } | {
+      recv T from P5;
+      send T to Q 
+    } | {
+      recv T from Q;
+      button B in {
+        set B title done;
+        attach B at c5
+      }
+    }
+  }
+}
+
+proc main() {
+  channel P1, P2, P3, P4, P5 in {
+    n1(P1) |
+    n2(P1, P2, P3) |
+    n3(P2, P4) |
+    n4(P3, P5) |
+    n5(P4, P5)
+  }
+}
+</textarea>
+</div>
+</div>
+
+
+</body>
+</html>
