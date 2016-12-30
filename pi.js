@@ -80,7 +80,7 @@ function Label() {
 function mark_label(asms) {
     var l = 0;
 
-    for each (let asm in asms) {
+    for (let asm of asms) {
         if (asm[0] === 'label') {
             asm[1].pos = l;
         } else {
@@ -90,7 +90,7 @@ function mark_label(asms) {
 
     var new_asms = [];
 
-    for each (let a in asms) {
+    for (let a of asms) {
         if (a[0] === 'label') {
             continue;
         } else if (a[0] === 'goto') {
@@ -122,22 +122,22 @@ function compile_p(scope, asms, p) {
         asms.push(['label', l2]);
     } else if (type === 'invoke') {
         var [name, args] = p[1];
-        asms.push(["invoke", name, [scope.get(arg) for each (arg in args)]]);
+        asms.push(["invoke", name, [for (arg of args) scope.get(arg)]]);
     } else if (type === 'channel') {
         var new_scope = new PScope(scope);
-        for each (let arg in p[1]) {
+        for (let arg of p[1]) {
             asms.push(['channel', new_scope.new_var(arg)]);
         }
         compile_p(new_scope, asms, p[2]);
     } else if (type === 'button') {
         var new_scope = new PScope(scope);
-        for each (let arg in p[1]) {
+        for (let arg of p[1]) {
             asms.push(['button', new_scope.new_var(arg)]);
         }
         compile_p(new_scope, asms, p[2]);
     } else if (type === 'when') {
         var [name, args] = p[1];
-        asms.push(["when", name, [scope.get(arg) for each (arg in args)]]);
+        asms.push(["when", name, [for (arg of args) scope.get(arg) ]]);
     } else if (type === 'send') {
         asms.push(['send', scope.get(p[1]), scope.get(p[2])]);
     } else if (type === 'recv') {
@@ -163,7 +163,7 @@ function compile_pdef(pdef) {
     var scope = new ProcScope();
     var asms = [];
 
-    for each (let arg in args) {
+    for (let arg of args) {
         scope.new_var(arg);
     }
 
@@ -175,7 +175,7 @@ function compile_pdef(pdef) {
 
 
 function compile_code(code) {
-    return [compile_pdef(pdef) for each (pdef in code)];
+    return [for (pdef of code) compile_pdef(pdef)];
 }
 
 
@@ -274,7 +274,7 @@ function State(procs) {
     this.pnames = [];
     this.pcodes = [];
 
-    for each (let [name,args,vars,insts] in procs) {
+    for (let [name,args,vars,insts] of procs) {
         this.pnames.push(name);
         this.pcodes.push([args, vars, insts]);
     }
@@ -327,9 +327,9 @@ State.prototype.call = function(stack, name, args) {
         throw "ERROR call args";
     }
 
-    var vars = [null for each (_ in range(0, varc))];
+    var vars = [for (_ of range(0, varc)) null];
 
-    for each (let i in range(0, argc)) {
+    for (let i of range(0, argc)) {
         vars[i] = args[i];
     }
 
@@ -339,7 +339,7 @@ State.prototype.call = function(stack, name, args) {
 
 
 State.prototype.step = function() {
-    for each (let chan in this.channels) {
+    for (let chan of this.channels) {
         if ((chan.senders.length === 0) || (chan.receivers.length === 0)) {
             continue;
         }
@@ -367,7 +367,7 @@ State.prototype.step = function() {
         return true;
     }
 
-    for each (let thread in this.threads) {
+    for (let thread of this.threads) {
         if (thread.blocked === true) {
             continue;
         }
@@ -394,7 +394,7 @@ State.prototype.step = function() {
     }
 
 
-    for each (let i in range(0, this.threads.length)) {
+    for (let i of range(0, this.threads.length)) {
         var thread = this.threads[i];
 
         if (thread.blocked === true) {
@@ -440,7 +440,7 @@ State.prototype.step = function() {
             stack.vars[inst[1]].style = inst[2];
             stack.pc += 1;
         } else if (inst[0] === 'invoke') {
-            var frame = this.call(stack, inst[1], [stack.vars[a] for each (a in inst[2])]);
+            var frame = this.call(stack, inst[1], [for (a of inst[2]) stack.vars[a]]);
             thread.stack = frame;
         } else {
             throw "NEVER REACH HERE";
@@ -479,7 +479,7 @@ State.prototype.step_thread = function(thread) {
 
 
 State.prototype.blocked = function() {
-    for each (let thread in this.threads) {
+    for (let thread of this.threads) {
         if (thread.blocked !== true) {
             return false;
         }

@@ -94,7 +94,7 @@ var PiLexer = (
         function convert_tokens(tokens) {
             var result = [];
 
-            for each (let token in tokens) {
+            for (let token of tokens) {
                 var [mode, match, s] = token;
 
                 if (match === 0) {

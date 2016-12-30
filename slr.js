@@ -193,7 +193,7 @@ var PiParser = (
                     stack.push(
                         [next_state,
                          [rule_num,
-                          [s for each ([_,s] in found)]]]);
+                          [for (f of found) f[1]]]]);
                 }
             }
         }

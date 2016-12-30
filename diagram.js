@@ -41,7 +41,7 @@ function onLoad() {
     }
 
     function updateButtons() {
-        for each (let button in state.buttons) {
+        for (let button of state.buttons) {
             if (button.pos !== null) {
                 if (button.elem === null) {
                     button.elem = document.createElementNS("http://www.w3.org/1999/xhtml", "button");
