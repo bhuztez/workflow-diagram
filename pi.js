@@ -122,7 +122,7 @@ function compile_p(scope, asms, p) {
         asms.push(['label', l2]);
     } else if (type === 'invoke') {
         var [name, args] = p[1];
-        asms.push(["invoke", name, [for (arg of args) scope.get(arg)]]);
+        asms.push(["invoke", name, args.map(arg => scope.get(arg))]);
     } else if (type === 'channel') {
         var new_scope = new PScope(scope);
         for (let arg of p[1]) {
@@ -137,7 +137,7 @@ function compile_p(scope, asms, p) {
         compile_p(new_scope, asms, p[2]);
     } else if (type === 'when') {
         var [name, args] = p[1];
-        asms.push(["when", name, [for (arg of args) scope.get(arg) ]]);
+        asms.push(["when", name, args.map(arg => scope.get(arg))]);
     } else if (type === 'send') {
         asms.push(['send', scope.get(p[1]), scope.get(p[2])]);
     } else if (type === 'recv') {
@@ -175,7 +175,7 @@ function compile_pdef(pdef) {
 
 
 function compile_code(code) {
-    return [for (pdef of code) compile_pdef(pdef)];
+    return code.map(pdef => compile_pdef(pdef));
 }
 
 
@@ -263,7 +263,7 @@ function Thread(num, stack) {
 }
 
 
-function range(begin, end) {
+function *range(begin, end) {
     for (var i=begin; i<end; i++) {
         yield i;
     }
@@ -327,11 +327,7 @@ State.prototype.call = function(stack, name, args) {
         throw "ERROR call args";
     }
 
-    var vars = [for (_ of range(0, varc)) null];
-
-    for (let i of range(0, argc)) {
-        vars[i] = args[i];
-    }
+    var vars = args.map(c => c);
 
     var frame = new Frame(stack, insts, 0, vars);
     return frame;
@@ -440,7 +436,7 @@ State.prototype.step = function() {
             stack.vars[inst[1]].style = inst[2];
             stack.pc += 1;
         } else if (inst[0] === 'invoke') {
-            var frame = this.call(stack, inst[1], [for (a of inst[2]) stack.vars[a]]);
+            var frame = this.call(stack, inst[1], inst[2].map(a => stack.vars[a]));
             thread.stack = frame;
         } else {
             throw "NEVER REACH HERE";
